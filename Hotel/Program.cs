@@ -1,5 +1,9 @@
+using Hotel.Application.Common.Interfaces;
 using Hotel.Infrastructue.Data;
+using Hotel.Infrastructue.Repository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Hotel.Domain.Entities;
 
 namespace Hotel
 {
@@ -14,7 +18,20 @@ namespace Hotel
             ///Adding Database 
             builder.Services.AddDbContext<ApplicationDbContext>(options => 
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-             
+
+            //builder.Services.AddIdentity<ApplicationUser,IdentityRole>
+            //    (options =>
+            //    {
+            //        options.SignIn.RequireConfirmedAccount = true;
+            //        options.SignIn.RequireConfirmedAccount = true;
+            //        options.User.RequireUniqueEmail = true;
+            //    })
+            //    .AddEntityFrameworkStores<ApplicationDbContext>()
+            //    .AddDefaultUI();
+
+            //Adding Repo
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -28,6 +45,7 @@ namespace Hotel
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            //app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();
@@ -35,6 +53,7 @@ namespace Hotel
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
+  
 
             app.Run();
         }

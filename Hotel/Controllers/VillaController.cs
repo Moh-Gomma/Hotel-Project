@@ -1,4 +1,5 @@
-﻿using Hotel.Domain.Entities;
+﻿using Hotel.Application.Common.Interfaces;
+using Hotel.Domain.Entities;
 using Hotel.Infrastructue.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -7,26 +8,62 @@ namespace Hotel.Web.Controllers
 {
     public class VillaController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly string _VillaPath;
 
-        public VillaController(ApplicationDbContext db)
+        public VillaController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
+            _webHostEnvironment = webHostEnvironment;
+            _VillaPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "RoomImages", "Villa");
         }
 
         public IActionResult Index()
         {
-            var villas = _db.Villas.ToList();
+            var villas = _unitOfWork.Villa.GetAll();
             return View(villas);
         }
 
+        private async Task<string> HandleImageUpload(IFormFile image , string oldImage = null)
+        {
+            if (!Directory.Exists(_VillaPath))
+            {
+                Directory.CreateDirectory(_VillaPath);
+            }
+            if(image == null)
+            {
+                return oldImage ?? "https://placehold.co/600x400/EEE/31343C";
+            }
+
+
+            if (!string.IsNullOrEmpty(oldImage))
+            {
+                var oldImageFullPath = Path.Combine(_webHostEnvironment.WebRootPath, oldImage.TrimStart('\\'));
+                if (System.IO.File.Exists(oldImageFullPath))
+                {
+                    System.IO.File.Delete(oldImageFullPath);
+                }
+            }
+
+            // Save new image
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+            var filePath = Path.Combine(_VillaPath, fileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(fileStream); 
+            }
+
+            return $"/Images/RoomImages/Villa/{fileName}";
+        }
         public IActionResult Create()
         {
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Villa obj)
+        public async Task< IActionResult> Create(Villa obj)
         {
             if(obj.Name == obj.Description)
             {
@@ -34,9 +71,9 @@ namespace Hotel.Web.Controllers
             }
             if (ModelState.IsValid)
             {
-
-                _db.Villas.Add(obj);
-                _db.SaveChanges();
+                obj.ImageUrl = await HandleImageUpload(obj.Image);
+                _unitOfWork.Villa.Add(obj);
+                _unitOfWork.Save();
                 TempData["Success"] = "Villa Has Been Added Successfully";
 
                 return RedirectToAction(nameof(Index));
@@ -45,7 +82,7 @@ namespace Hotel.Web.Controllers
         }
         public IActionResult Update(int id)
         {
-            var obj = _db.Villas.FirstOrDefault(u => u.Id == id);
+            var obj = _unitOfWork.Villa.Get(u => u.Id == id);
             if (obj == null)
             {
                 return RedirectToAction("Error", "Home");
@@ -54,13 +91,14 @@ namespace Hotel.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Update(Villa obj)
+        public async Task< IActionResult> Update(Villa obj)
         {
 
             if (ModelState.IsValid)
             {
-                _db.Villas.Update(obj);
-                _db.SaveChanges();
+                obj.ImageUrl = await HandleImageUpload(obj.Image, obj.ImageUrl);
+                _unitOfWork.Villa.Update(obj);
+                _unitOfWork.Save();
                 TempData["Success"] = "Villa Has Been Updated Successfully";
 
                 return RedirectToAction(nameof(Index));
@@ -72,7 +110,7 @@ namespace Hotel.Web.Controllers
 
         public IActionResult Delete(int id)
         {
-            var obj = _db.Villas.FirstOrDefault(u => u.Id == id);
+            var obj = _unitOfWork.Villa.Get(u => u.Id == id);
             if (obj == null)
             {
                 return RedirectToAction("Error", "Home");
@@ -85,8 +123,8 @@ namespace Hotel.Web.Controllers
 
             if (obj is not null)
             {
-                _db.Villas.Remove(obj);
-                _db.SaveChanges();
+                _unitOfWork.Villa.Remove(obj);
+                _unitOfWork.Save();
                 TempData["Success"] = "Villa Has Benn Deleted Successfully";
                 return RedirectToAction(nameof(Index));
             }

@@ -1,21 +1,29 @@
 using System.Diagnostics;
+using Hotel.Application.Common.Interfaces;
 using Hotel.Models;
+using Hotel.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hotel.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
-            _logger = logger;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var homeVm = new HomeVM()
+            {
+                VillaList = _unitOfWork.Villa.GetAll(includeProperties: "VillaAmenity"),
+                Nights = 1,
+                CheckInDate = DateOnly.FromDateTime(DateTime.Now)
+            };
+            return View(homeVm);
         }
 
         public IActionResult Privacy()

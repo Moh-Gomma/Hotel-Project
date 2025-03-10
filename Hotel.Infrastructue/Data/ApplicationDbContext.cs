@@ -1,10 +1,6 @@
 ﻿using Hotel.Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hotel.Infrastructue.Data
 {
@@ -12,6 +8,8 @@ namespace Hotel.Infrastructue.Data
     {
         public DbSet<Villa> Villas { get; set; }
         public DbSet<VillaNumber> VillaNumbers { get; set; }
+        public DbSet<Amenity> Amenities { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
@@ -58,7 +56,37 @@ namespace Hotel.Infrastructue.Data
                     Villa_Number = 104,
                     villaId = 3
                 });
-        }
+
+            modelBuilder.Entity<Amenity>().HasData(
+                new Amenity
+                {
+                    Id = 1,
+                    Name = "Wi-Fi",
+                    Description = "High-speed wireless internet access",
+                    VillaId = 1
+                },
+                new Amenity
+                {
+                    Id = 2,
+                    Name = "Swimming Pool",
+                    Description = "Outdoor pool with a scenic view",
+                    VillaId = 1
+                },
+                new Amenity
+                {
+                    Id = 3,
+                    Name = "Air Conditioning",
+                    Description = "Central cooling system",
+                    VillaId = 3
+                },
+                new Amenity
+                {
+                    Id = 4,
+                    Name = "Gym",
+                    Description = "Fully equipped fitness center",
+                    VillaId = 3
+                });
     }
+}
 
 }

@@ -22,6 +22,63 @@ namespace Hotel.Infrastructue.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Hotel.Domain.Entities.Amenity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("VillaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VillaId");
+
+                    b.ToTable("Amenities");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "High-speed wireless internet access",
+                            Name = "Wi-Fi",
+                            VillaId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Outdoor pool with a scenic view",
+                            Name = "Swimming Pool",
+                            VillaId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Central cooling system",
+                            Name = "Air Conditioning",
+                            VillaId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Fully equipped fitness center",
+                            Name = "Gym",
+                            VillaId = 3
+                        });
+                });
+
             modelBuilder.Entity("Hotel.Domain.Entities.Villa", b =>
                 {
                     b.Property<int>("Id")
@@ -116,6 +173,17 @@ namespace Hotel.Infrastructue.Migrations
                             Villa_Number = 104,
                             villaId = 3
                         });
+                });
+
+            modelBuilder.Entity("Hotel.Domain.Entities.Amenity", b =>
+                {
+                    b.HasOne("Hotel.Domain.Entities.Villa", "villa")
+                        .WithMany()
+                        .HasForeignKey("VillaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("villa");
                 });
 
             modelBuilder.Entity("Hotel.Domain.Entities.VillaNumber", b =>
