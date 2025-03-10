@@ -11,7 +11,7 @@ namespace Hotel.Domain.Entities
         [Required(ErrorMessage = " The First name is Required")]
         [StringLength(50, ErrorMessage = " Name is Too Long"), MinLength(3, ErrorMessage = " Name is too Short")]
         public string LastName { get; set; } =string.Empty;
-
+        public DateTime CreationTime { get; set; }
         public string? PersonalId { get; set; }
 
     }

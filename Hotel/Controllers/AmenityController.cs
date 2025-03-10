@@ -1,13 +1,16 @@
 ﻿using Hotel.Application.Common.Interfaces;
+using Hotel.Application.Utility;
 using Hotel.Domain.Entities;
 using Hotel.Infrastructue.Data;
 using Hotel.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Hotel.Web.Controllers
 {
+    [Authorize(Roles =SD.Role_Admin)]
     public class AmenityController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

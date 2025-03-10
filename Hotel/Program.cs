@@ -19,18 +19,22 @@ namespace Hotel
             builder.Services.AddDbContext<ApplicationDbContext>(options => 
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>
-                (options =>
-                {
-                    options.SignIn.RequireConfirmedAccount = true;
-                    options.SignIn.RequireConfirmedAccount = true;
-                    options.User.RequireUniqueEmail = true;
-                })
+            builder.Services.AddIdentity<ApplicationUser , IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultUI();
 
             //Adding Repo
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+                options.LogoutPath = "/Account/LogOut";
+                options.SlidingExpiration = true;
+                options.ReturnUrlParameter = "returnUrl";
+            });
 
             var app = builder.Build();
 
@@ -44,6 +48,8 @@ namespace Hotel
 
             app.UseHttpsRedirection();
             app.UseRouting();
+
+            app.UseStatusCodePagesWithRedirects("~/Home/Index"); // Redirects 404 to Home page
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -1,11 +1,15 @@
 ﻿using Hotel.Application.Common.Interfaces;
+using Hotel.Application.Utility;
 using Hotel.Domain.Entities;
 using Hotel.Infrastructue.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Hotel.Web.Controllers
 {
+
+
     public class VillaController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
