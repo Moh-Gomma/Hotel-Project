@@ -19,15 +19,15 @@ namespace Hotel
             builder.Services.AddDbContext<ApplicationDbContext>(options => 
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            //builder.Services.AddIdentity<ApplicationUser,IdentityRole>
-            //    (options =>
-            //    {
-            //        options.SignIn.RequireConfirmedAccount = true;
-            //        options.SignIn.RequireConfirmedAccount = true;
-            //        options.User.RequireUniqueEmail = true;
-            //    })
-            //    .AddEntityFrameworkStores<ApplicationDbContext>()
-            //    .AddDefaultUI();
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>
+                (options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = true;
+                    options.SignIn.RequireConfirmedAccount = true;
+                    options.User.RequireUniqueEmail = true;
+                })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultUI();
 
             //Adding Repo
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -45,7 +45,7 @@ namespace Hotel
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            //app.UseAuthentication();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();

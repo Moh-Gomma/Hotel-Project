@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Hotel.Domain.Entities
 {
-    public class ApplicationUser 
+    public class ApplicationUser : IdentityUser
     {
         [Required(ErrorMessage = " The First name is Required")]
         [StringLength(50 , ErrorMessage = " Name is Too Long") , MinLength(3 , ErrorMessage = " Name is too Short")]
