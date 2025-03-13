@@ -13,6 +13,7 @@ namespace Hotel.Application.Common.Interfaces
         IAmenityRepository Amenity { get; }
 
         IBookingRepository Booking { get; }
+        IApplicationUserRepository User { get; }
         void Save();
     }
 }

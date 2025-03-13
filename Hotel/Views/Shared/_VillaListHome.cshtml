@@ -37,26 +37,31 @@
                 <button type="button" class="btn btn-outline-primary rounded-pill w-50" data-bs-toggle="modal" data-bs-target="#detailsModal-@villa.Id">
                     <i class="bi bi-eye me-2"></i>Details
                 </button>
-                @if (Model.CheckInDate >= DateOnly.FromDateTime(DateTime.Now))
+                @if (Model.IsAvailabilityChecked && Model.CheckInDate >= DateTime.Now) // Added condition
                 {
                     if (villa.IsAvailable)
                     {
-                        <button type="button" class="btn btn-success rounded-pill w-50 book-btn" data-villa-id="@villa.Id">
+                        <a asp-action="FinalizeBooking"
+                           asp-controller="Booking"
+                           asp-route-villaId="@villa.Id"
+                           asp-route-checkInDate="@Model.CheckInDate.ToString("yyyy-MM-dd")"
+                           asp-route-nights="@Model.Nights"
+                           class="btn btn-success rounded-pill w-50"
+                           data-villa-id="@villa.Id">
                             <i class="bi bi-bookmark me-2"></i>Book
-                        </button>
+                        </a>
                     }
                     else
                     {
-                        <button type="button" disabled class="btn btn-outline-danger rounded-pill w-50 book-btn" data-villa-id="@villa.Id">
-                            <i class="bi bi-info-circle"></i>
-                            Not Available
+                        <button type="button" disabled class="btn btn-outline-danger rounded-pill w-50" data-villa-id="@villa.Id">
+                            <i class="bi bi-info-circle"></i>Not Available
                         </button>
                     }
                 }
             </div>
         </div>
 
-        <!-- Modal for Villa Details -->
+        <!-- Modal -->
         <div class="modal fade" id="detailsModal-@villa.Id" tabindex="-1" aria-labelledby="detailsModalLabel-@villa.Id" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -98,17 +103,23 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        @if (Model.CheckInDate >= DateOnly.FromDateTime(DateTime.Now))
+                        @if (Model.IsAvailabilityChecked && Model.CheckInDate >= DateTime.Now) // Added condition
                         {
                             if (villa.IsAvailable)
                             {
-                                <button type="button" class="btn btn-success book-btn" data-villa-id="@villa.Id">
+                                <a asp-action="FinalizeBooking"
+                                   asp-controller="Booking"
+                                   asp-route-villaId="@villa.Id"
+                                   asp-route-checkInDate="@Model.CheckInDate.ToString("yyyy-MM-dd")"
+                                   asp-route-nights="@Model.Nights"
+                                   class="btn btn-success"
+                                   data-villa-id="@villa.Id">
                                     <i class="bi bi-bookmark me-2"></i>Book
-                                </button>
+                                </a>
                             }
                             else
                             {
-                                <button type="button" disabled class="btn btn-outline-danger book-btn" data-villa-id="@villa.Id">
+                                <button type="button" disabled class="btn btn-outline-danger" data-villa-id="@villa.Id">
                                     Not Available
                                 </button>
                             }

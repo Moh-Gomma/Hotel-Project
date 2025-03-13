@@ -21,7 +21,8 @@ namespace Hotel.Controllers
             {
                 VillaList = _unitOfWork.Villa.GetAll(includeProperties: "VillaAmenity"),
                 Nights = 1,
-                CheckInDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+                CheckInDate = DateTime.Now.AddDays(1),
+                IsAvailabilityChecked = false
             };
             foreach (var vill in homeVm.VillaList)
             {
@@ -35,8 +36,9 @@ namespace Hotel.Controllers
 
 
         [HttpPost]
-        public IActionResult GetVillaById([FromForm] int Nights , [FromForm] DateOnly CheckInDate)
+        public IActionResult GetVillaById([FromForm] int Nights , [FromForm] DateTime CheckInDate)
         {
+            Thread.Sleep(2000); // Simulate delay
 
             var villaList = _unitOfWork.Villa.GetAll(includeProperties: "VillaAmenity");
             foreach (var vill in villaList)
@@ -50,7 +52,8 @@ namespace Hotel.Controllers
             {
                 CheckInDate = CheckInDate,
                 Nights = Nights,
-                VillaList = villaList
+                VillaList = villaList ,
+                IsAvailabilityChecked = true
             };
             return PartialView("_VillaListHome",model);
         }

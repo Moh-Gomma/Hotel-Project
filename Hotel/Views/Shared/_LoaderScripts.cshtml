@@ -1,0 +1,19 @@
+﻿<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ajax-unobtrusive/3.2.6/jquery.unobtrusive-ajax.min.js"></script>
+<script>
+    function showLoader(targetId) {
+        $(targetId).hide(); // Hide the target content
+        $("#loader").removeClass("d-none").show(); // Show the loader
+    }
+
+    function hideLoader(targetId) {
+        $("#loader").hide(); // Hide the loader
+        $(targetId).show(); // Show the updated content
+    }
+
+    function onAjaxFailure(xhr, status, error, targetId) {
+        $("#loader").hide(); // Hide loader on failure
+        $(targetId).show(); // Restore previous content
+        alert('Error loading data: ' + error);
+    }
+</script>

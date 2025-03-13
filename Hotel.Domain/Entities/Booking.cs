@@ -23,8 +23,11 @@ namespace Hotel.Domain.Entities
         [ForeignKey("VillaId")]
         public Villa Villa { get; set; }
         [Required]
-        public string Name { get; set; }
-        [Required]
+        [StringLength(50, ErrorMessage = " Name is Too Long"), MinLength(3, ErrorMessage = " Name is too Short")]
+        public string FirstName { get; set; } = string.Empty;
+        [Required(ErrorMessage = " The Last name is Required")]
+        [StringLength(50, ErrorMessage = " Name is Too Long"), MinLength(3, ErrorMessage = " Name is too Short")]
+        public string LastName { get; set; } = string.Empty; [Required]
         public string Email { get; set; }
         public string? PhoneNumber { get; set; }
         [Required]
@@ -32,11 +35,11 @@ namespace Hotel.Domain.Entities
         public int Nights { get; set; }
         public string? status { get; set; }
         [Required]
-        public DateOnly BookingDate { get; set; }
+        public DateTime BookingDate { get; set; }
         [Required]
-        public DateOnly CheckInDate { get; set; }
+        public DateTime CheckInDate { get; set; }
         [Required]
-        public DateOnly CheckOutDate { get; set; }
+        public DateTime CheckOutDate { get; set; }
         public bool IsPayMentSuccessful { get; set; }
         public DateTime PaymentDate { get; set; }
 
@@ -47,6 +50,9 @@ namespace Hotel.Domain.Entities
         public DateOnly ActualCheckOutDate { get; set; }
 
         public int VillaNumber { get; set; }
+
+        [StringLength(20)]
+        public string? BookingNumber { get; set; }
 
     }
 }
