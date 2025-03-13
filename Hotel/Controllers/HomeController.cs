@@ -21,9 +21,38 @@ namespace Hotel.Controllers
             {
                 VillaList = _unitOfWork.Villa.GetAll(includeProperties: "VillaAmenity"),
                 Nights = 1,
-                CheckInDate = DateOnly.FromDateTime(DateTime.Now)
+                CheckInDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
             };
+            foreach (var vill in homeVm.VillaList)
+            {
+                if (vill.Id % 2 == 0)
+                {
+                    vill.IsAvailable = false;
+                }
+            }
             return View(homeVm);
+        }
+
+
+        [HttpPost]
+        public IActionResult GetVillaById([FromForm] int Nights , [FromForm] DateOnly CheckInDate)
+        {
+
+            var villaList = _unitOfWork.Villa.GetAll(includeProperties: "VillaAmenity");
+            foreach (var vill in villaList)
+            {
+                if (vill.Id % 2 == 0)
+                {
+                    vill.IsAvailable = false;
+                }
+            }
+            HomeVM model = new HomeVM()
+            {
+                CheckInDate = CheckInDate,
+                Nights = Nights,
+                VillaList = villaList
+            };
+            return PartialView("_VillaListHome",model);
         }
 
         public IActionResult Privacy()
