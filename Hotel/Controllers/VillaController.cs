@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 namespace Hotel.Web.Controllers
 {
 
-
+    [Authorize(Roles =SD.Role_Admin)]
     public class VillaController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

@@ -3,6 +3,7 @@ using Hotel.Application.Utility;
 using Hotel.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe.Checkout;
 using System.Security.Claims;
 
 namespace Hotel.Web.Controllers
@@ -46,6 +47,59 @@ namespace Hotel.Web.Controllers
             return View(booking);
         }
 
+        //[Authorize]
+        //[HttpPost]
+        //public IActionResult FinalizeBooking(Booking booking)
+        //{
+        //    var villa = _unitOfWOrk.Villa.Get(u => u.Id == booking.VillaId);
+        //    booking.TotalCost = villa.Price * booking.Nights;
+
+        //    booking.BookingNumber = GenerateUniqueBookNumber();// Unique
+
+        //    booking.status = SD.StatusPending;
+        //    booking.BookingDate = DateTime.Now;
+
+        //    _unitOfWOrk.Booking.Add(booking);
+        //    _unitOfWOrk.Save();
+        //    // Generate fully qualified URLs using Url.Action
+        //    var successUrl = Url.Action("BookingConfirmation", "Booking", new { bookingId = booking.Id }, Request.Scheme, Request.Host.Value);
+        //    var cancelUrl = Url.Action("FinalizeBooking", "Booking", new { villaId = booking.VillaId, checkInDate = booking.CheckInDate.ToString("yyyy-MM-dd"), nights = booking.Nights }, Request.Scheme, Request.Host.Value);
+
+        //    var domain = Request.Scheme + ":/" + Request.Host.Value;
+        //    var options = new SessionCreateOptions
+        //    {
+        //        LineItems = new List<SessionLineItemOptions>(),
+        //        Mode = "payment",
+        //        SuccessUrl = successUrl,
+        //        CancelUrl = cancelUrl,
+        //    };
+
+        //    options.LineItems.Add(new SessionLineItemOptions
+        //    {
+        //        PriceData = new SessionLineItemPriceDataOptions
+        //        {
+        //            UnitAmount = (long)(booking.TotalCost * 100),
+        //            Currency = "usd",
+        //            ProductData = new SessionLineItemPriceDataProductDataOptions
+        //            {
+        //                Name = villa.Name,
+        //                //Images = new List<string> { domain + villa.ImageUrl }
+        //            }
+        //        },
+        //        Quantity = 1
+        //    });
+
+        //    var service = new SessionService();
+        //    Session session = service.Create(options);
+
+        //    _unitOfWOrk.Booking.UpdatePaymentStatus(booking.Id, session.Id, session.PaymentIntentId);
+        //    _unitOfWOrk.Save();
+
+        //    Response.Headers.Add("Location", session.Url);
+        //    return new StatusCodeResult(303);
+
+        //    //return RedirectToAction(nameof(BookingConfirmation), new { bookingId = booking.Id });
+        //}
         [Authorize]
         [HttpPost]
         public IActionResult FinalizeBooking(Booking booking)
@@ -53,7 +107,7 @@ namespace Hotel.Web.Controllers
             var villa = _unitOfWOrk.Villa.Get(u => u.Id == booking.VillaId);
             booking.TotalCost = villa.Price * booking.Nights;
 
-            booking.BookingNumber = GenerateUniqueBookNumber();// Unique
+            booking.BookingNumber = GenerateUniqueBookNumber(); // Unique
 
             booking.status = SD.StatusPending;
             booking.BookingDate = DateTime.Now;
@@ -61,13 +115,65 @@ namespace Hotel.Web.Controllers
             _unitOfWOrk.Booking.Add(booking);
             _unitOfWOrk.Save();
 
+            // Generate fully qualified URLs using Url.Action
+            var successUrl = Url.Action("BookingConfirmation", "Booking", new { bookingId = booking.Id }, Request.Scheme, Request.Host.Value);
+            var cancelUrl = Url.Action("FinalizeBooking", "Booking", new { villaId = booking.VillaId, checkInDate = booking.CheckInDate.ToString("yyyy-MM-dd"), nights = booking.Nights }, Request.Scheme, Request.Host.Value);
 
-            return RedirectToAction(nameof(BookingConfirmation), new { bookingId = booking.Id });
+            // Ensure the ImageUrl is a valid URL
+            var imageUrl = villa.ImageUrl;
+            if (!Uri.IsWellFormedUriString(imageUrl, UriKind.Absolute))
+            {
+                imageUrl = $"{Request.Scheme}://{Request.Host.Value}{villa.ImageUrl}";
+            }
+
+            var options = new SessionCreateOptions
+            {
+                LineItems = new List<SessionLineItemOptions>(),
+                Mode = "payment",
+                SuccessUrl = successUrl,
+                CancelUrl = cancelUrl,
+            };
+
+            options.LineItems.Add(new SessionLineItemOptions
+            {
+                PriceData = new SessionLineItemPriceDataOptions
+                {
+                    UnitAmount = (long)(booking.TotalCost * 100),
+                    Currency = "usd",
+                    ProductData = new SessionLineItemPriceDataProductDataOptions
+                    {
+                        Name = villa.Name,
+                    }
+                },
+                Quantity = 1
+            });
+
+            var service = new SessionService();
+            Session session = service.Create(options);
+
+            _unitOfWOrk.Booking.UpdatePaymentStatus(booking.Id, session.Id, session.PaymentIntentId);
+            _unitOfWOrk.Save();
+
+            Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);
         }
 
         [Authorize]
         public IActionResult BookingConfirmation(int bookingId)
         {
+            Booking bookingFromDb = _unitOfWOrk.Booking.Get(b => b.Id == bookingId , includeProperties: "User,Villa");
+            if(bookingFromDb.status == SD.StatusPending)
+            {
+                var service = new SessionService();
+                Session session = service.Get(bookingFromDb.StripeSessionId);
+                if(session.PaymentStatus == "paid")
+                {
+                    _unitOfWOrk.Booking.UpdateStatus(bookingFromDb.Id, SD.StatusApproved);
+                    _unitOfWOrk.Booking.UpdatePaymentStatus(bookingFromDb.Id, session.Id, session.PaymentIntentId);
+                    _unitOfWOrk.Save();
+                }
+            }
+ 
             return View(bookingId);
         }
 

@@ -11,9 +11,8 @@
         $(targetId).show(); // Show the updated content
     }
 
-    function onAjaxFailure(xhr, status, error, targetId) {
+    function onAjaxFailure(xhr, status, error) {
         $("#loader").hide(); // Hide loader on failure
-        $(targetId).show(); // Restore previous content
-        alert('Error loading data: ' + error);
+        alert('Error loading villa list: ' + error);
     }
 </script>

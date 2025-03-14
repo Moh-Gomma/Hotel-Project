@@ -32,3 +32,8 @@ body {
 /*Create Villa View*/
 
 /*Create Villa View End*/
+
+/* site.css */
+.animate__fadeInUp {
+    animation-duration: 1s;
+}

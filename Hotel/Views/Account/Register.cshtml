@@ -91,7 +91,7 @@
                         </div>
 
                         <!-- Role Dropdown (if applicable) -->
-                        @if (Model.RoleList != null && Model.RoleList.Any())
+@*                         @if (Model.RoleList != null && Model.RoleList.Any())
                         {
                             <div class="mb-4 position-relative">
                                 <label asp-for="Role" class="form-label fw-medium">Role</label>
@@ -100,7 +100,7 @@
                                 </select>
                                 <span asp-validation-for="Role" class="text-danger small mt-1 d-block"></span>
                             </div>
-                        }
+                        } *@
 
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary w-100 py-2 mb-3 fw-bold">Register</button>

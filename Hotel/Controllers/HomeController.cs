@@ -38,7 +38,7 @@ namespace Hotel.Controllers
         [HttpPost]
         public IActionResult GetVillaById([FromForm] int Nights , [FromForm] DateTime CheckInDate)
         {
-            Thread.Sleep(2000); // Simulate delay
+            Thread.Sleep(1000); // Simulate delay
 
             var villaList = _unitOfWork.Villa.GetAll(includeProperties: "VillaAmenity");
             foreach (var vill in villaList)

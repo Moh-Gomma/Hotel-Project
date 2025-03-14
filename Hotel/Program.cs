@@ -4,6 +4,7 @@ using Hotel.Infrastructue.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Hotel.Domain.Entities;
+using Stripe;
 
 namespace Hotel
 {
@@ -37,6 +38,10 @@ namespace Hotel
             });
 
             var app = builder.Build();
+
+            //Stripe
+            StripeConfiguration.ApiKey = app.Configuration.GetSection("Stripe:SecretKey").Get<string>();
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
