@@ -51,18 +51,35 @@ body {
 }
 
 .navbar-top {
-    background-color: #fff;
+    background-color: #2c3e50; 
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     padding: 10px 20px;
     margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 
     .navbar-top .nav-link {
-        color: #333 !important;
+        color: #dfe6e9 !important;
+        font-weight: 500;
+        padding: 0.25rem 0.75rem;
+        transition: color 0.3s ease;
     }
 
         .navbar-top .nav-link:hover {
-            color: #007bff !important;
+            color: #fff !important;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+    .navbar-top .btn-danger {
+        margin-left: 10px;
+        font-size: 0.9rem;
+    }
+
+        .navbar-top .btn-danger i {
+            margin-right: 5px;
         }
 
 footer {
@@ -90,6 +107,10 @@ footer {
 
     .content {
         margin-left: 70px;
+    }
+
+    .navbar-top {
+        padding: 5px 10px;
     }
 
     footer {

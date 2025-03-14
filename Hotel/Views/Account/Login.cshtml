@@ -4,18 +4,22 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/LoginForm.css" asp-append-version="true" />
 }
 
 <div class="auth-container">
     <div class="container">
         <div class="row justify-content-center align-items-center min-vh-100">
             <div class="col-12 col-md-8 col-lg-6">
+                <div class="text-center mb-4">
+                    <img src="~/images/Logo.jpg" alt="Hotel Logo" class="auth-logo" width="80" />
+                    <h1 class="text-primary fw-bold mt-2">Welcome Back</h1>
+                </div>
                 <div class="card auth-card p-4 p-md-5">
                     <h2 class="text-center mb-4 text-primary fw-bold">Sign In</h2>
-                    <form asp-action="Login" method="post" >
+                    <form asp-action="Login" method="post">
                         @Html.AntiForgeryToken()
-                        <input asp-for="RedirectUrl" hidden/>
+                        <input asp-for="RedirectUrl" hidden />
 
                         <!-- Email -->
                         <div class="mb-4 position-relative">

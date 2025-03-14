@@ -19,7 +19,6 @@
                         <!-- Return URL -->
                         <input asp-for="RedirectUrl" hidden />
 
-                        <!-- Display Model Errors (e.g., Identity Validation) -->
                         @if (!ViewData.ModelState.IsValid)
                         {
                             <div class="alert alert-danger" role="alert">
