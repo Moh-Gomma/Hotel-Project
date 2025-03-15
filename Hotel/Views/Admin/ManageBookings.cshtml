@@ -1,11 +1,78 @@
 ﻿@using Hotel.Application.Utility
-@model AdminDashboardViewModel
+@model List<Hotel.Domain.Entities.Booking>
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Manage Bookings";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
+<style>
+    .notification-area {
+        position: relative;
+        max-width: 100%;
+        z-index: 1000;
+    }
+
+    .notification-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        animation: slideIn 0.5s ease-out;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    @@keyframes slideIn {
+        from {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .notification-item .btn-close {
+        padding: 0.25rem 0.5rem;
+        font-size: 1rem;
+        line-height: 1;
+        background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+        border: none;
+    }
+
+        .notification-item .btn-close:hover {
+            opacity: 0.75;
+        }
+
+    .card:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(90deg, #0056b3, #007bff);
+        transition: background 0.3s ease;
+    }
+
+    .modal-footer .btn {
+        min-width: 120px;
+    }
+</style>
 
 <div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h2 text-dark fw-bold animate__animated animate__fadeInDown">
+                <i class="bi bi-ticket-detailed me-2"></i> Manage Bookings
+            </h1>
+            <p class="text-muted">Review and manage all bookings. Approve or reject pending bookings to update their status and villa availability.</p>
+        </div>
+    </div>
+
     <!-- Notification Area -->
     @if (TempData["Success"] != null || TempData["Error"] != null)
     {
@@ -27,110 +94,15 @@
         </div>
     }
 
-    <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="h2 text-dark fw-bold animate__animated animate__fadeInDown">
-                <i class="bi bi-speedometer2 me-2"></i> Admin Dashboard
-            </h1>
-            <p class="text-muted">Welcome to the Villa Admin Page. Monitor key metrics and manage your resources efficiently.</p>
-        </div>
-    </div>
-
-    <!-- Metrics Cards -->
-    <div class="row mb-4">
-        <!-- Total Bookings -->
-        <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card shadow-lg border-0 rounded-3 animate__animated animate__fadeIn" style="background: linear-gradient(135deg, #ffffff, #f1f3f5);">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1">Total Bookings</h6>
-                            <h3 class="fw-bold mb-0 text-primary">@Model.TotalBaoking</h3>
-                        </div>
-                        <div class="ms-3">
-                            <i class="bi bi-ticket-detailed text-primary" style="font-size: 2.5rem;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Revenue -->
-        <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card shadow-lg border-0 rounded-3 animate__animated animate__fadeIn" style="background: linear-gradient(135deg, #ffffff, #f1f3f5);">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1">Total Revenue</h6>
-                            <h3 class="fw-bold mb-0 text-success">$@Model.TotalRevenue.ToString("F2")</h3>
-                        </div>
-                        <div class="ms-3">
-                            <i class="bi bi-currency-dollar text-success" style="font-size: 2.5rem;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pending Bookings -->
-        <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card shadow-lg border-0 rounded-3 animate__animated animate__fadeIn" style="background: linear-gradient(135deg, #ffffff, #f1f3f5);">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1">Pending Bookings</h6>
-                            <h3 class="fw-bold mb-0 text-warning">@Model.PendingBookings</h3>
-                        </div>
-                        <div class="ms-3">
-                            <i class="bi bi-hourglass-split text-warning" style="font-size: 2.5rem;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Confirmed Bookings -->
-        <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card shadow-lg border-0 rounded-3 animate__animated animate__fadeIn" style="background: linear-gradient(135deg, #ffffff, #f1f3f5);">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1">Confirmed Bookings</h6>
-                            <h3 class="fw-bold mb-0 text-success">@Model.ConfirmedBookings</h3>
-                        </div>
-                        <div class="ms-3">
-                            <i class="bi bi-check-circle text-success" style="font-size: 2.5rem;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Booking  Chart -->
-    <div class="row mb-4">
+    <!-- Bookings Table -->
+    <div class="row">
         <div class="col-12">
             <div class="card shadow-lg border-0 rounded-3 animate__animated animate__fadeIn">
                 <div class="card-header bg-primary text-white p-3" style="border-radius: 0.75rem 0.75rem 0 0;">
-                    <h5 class="mb-0">Booking Trends (Last 6 Months)</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="bookingTrendsChart" height="100"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Manage Bookings Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-lg border-0 rounded-3 animate__animated animate__fadeIn">
-                <div class="card-header bg-primary text-white p-3" style="border-radius: 0.75rem 0.75rem 0 0;">
-                    <h5 class="mb-0">Manage Bookings</h5>
+                    <h5 class="mb-0">All Bookings</h5>
                 </div>
                 <div class="card-body p-4">
-                    @if (Model.Bookings == null || !Model.Bookings.Any())
+                    @if (Model == null || !Model.Any())
                     {
                         <p class="text-center text-muted">No bookings found.</p>
                     }
@@ -151,7 +123,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var booking in Model.Bookings)
+                                    @foreach (var booking in Model)
                                     {
                                         <tr class="align-middle">
                                             <td>@(booking.BookingNumber ?? "Not Assigned")</td>
@@ -231,136 +203,14 @@
                         </div>
                     }
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Links -->
-    <div class="row">
-        <div class="col-12">
-            <h5 class="text-dark fw-bold mb-3 animate__animated animate__fadeIn">Quick Links</h5>
-            <div class="d-flex flex-wrap gap-3">
-                <a asp-controller="Villa" asp-action="Index" class="btn btn-primary rounded-pill px-4">
-                    <i class="bi bi-house-door me-2"></i> Manage Villas
-                </a>
-                <a asp-controller="VillaNumber" asp-action="Index" class="btn btn-primary rounded-pill px-4">
-                    <i class="bi bi-door-open me-2"></i> Manage Villa Numbers
-                </a>
-                <a asp-controller="Amenity" asp-action="Index" class="btn btn-primary rounded-pill px-4">
-                    <i class="bi bi-gear me-2"></i> Manage Amenities
-                </a>
-                <a asp-controller="Admin" asp-action="ManageBookings" class="btn btn-primary rounded-pill px-4">
-                    <i class="bi bi-ticket-detailed me-2"></i> Manage Bookings
-                </a>
+                <div class="card-footer bg-transparent border-0 text-center py-3">
+                    <a asp-action="Index" asp-controller="Admin" class="btn btn-outline-secondary btn-lg rounded-pill">
+                        <i class="bi bi-arrow-left-circle me-2"></i> Back to Dashboard
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .notification-area {
-        position: relative;
-        max-width: 100%;
-        z-index: 1000;
-    }
 
-    .notification-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
-        animation: slideIn 0.5s ease-out;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    @@keyframes slideIn {
-        from {
-            transform: translateY(-100%);
-            opacity: 0;
-        }
-
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    .notification-item .btn-close {
-        padding: 0.25rem 0.5rem;
-        font-size: 1rem;
-        line-height: 1;
-        background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
-        border: none;
-    }
-
-        .notification-item .btn-close:hover {
-            opacity: 0.75;
-        }
-
-    .card:hover {
-        transform: translateY(-5px);
-        transition: transform 0.3s ease;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
-    }
-
-    .btn-primary:hover {
-        background: linear-gradient(90deg, #0056b3, #007bff);
-        transition: background 0.3s ease;
-    }
-
-    .modal-footer .btn {
-        min-width: 120px;
-    }
-</style>
-
-
-@section Scripts {
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Booking
-        document.addEventListener('DOMContentLoaded', function () {
-            const ctx = document.getElementById('bookingTrendsChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: @Html.Raw(Json.Serialize(Model.BookingTrendLabels)),
-                    datasets: [{
-                        label: 'Bookings',
-                        data: @Html.Raw(Json.Serialize(Model.BookingTrends)),
-                        borderColor: '#007bff',
-                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Number of Bookings'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Month'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    }
-                }
-            });
-        });
-    </script>
-}

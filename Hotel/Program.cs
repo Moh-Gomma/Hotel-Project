@@ -10,7 +10,7 @@ namespace Hotel
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +58,22 @@ namespace Hotel
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            var configuration = app.Services.GetRequiredService<IConfiguration>();
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    await DbInitializer.SeedDefaultAdmin(services);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while seeding the default admin user.");
+                }
+            }
+
 
             app.MapStaticAssets();
             app.MapControllerRoute(
